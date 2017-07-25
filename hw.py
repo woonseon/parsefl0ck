@@ -41,21 +41,25 @@ for i in editData_s:
     temp_list.append([a[0], a[1]])
     obj_datetime = datetime.strptime(a[1], '%Y-%m-%d %H:%M')
     #print("Num:%4d  IP: %15s  Date: %15s"%(count,a[0],obj_datetime))
-    count += 1
 
     list_d = os.listdir('/home/capoo/Desktop/BoB/Choi')
 
     for j in list_d:
-        file_name = '/home/capoo/Desktop/BoB/Choi/%s/signCert.cert'%j
-        f = codecs.open(file_name,'r','CP949')
-        line = f.readline()
-        line = line.replace('cn=', '')
-        line = line.replace('()', ',')
-        line = line.replace('ou=', '')
-        line = line.replace('o=', '')
-        line = line.replace('c=', '')
-        line_t = line.split(',')
+        if a[0] == j:
+            file_name = '/home/capoo/Desktop/BoB/Choi/%s/signCert.cert'%j
+            f = codecs.open(file_name,'r','CP949')
+            line = f.readline()
+            line = line.replace('cn=', '')
+            line = line.replace('()', ',')
+            line = line.replace('ou=', '')
+            line = line.replace('o=', '')
+            line = line.replace('c=', '')
+            line_t = line.split(',')
 
-        #print(line_t[0][-20:-1])
-        print(line_t)
-        f.close
+            #print(line_t[0][-20:-1])
+            #print(line_t)
+            print("Num:%5d  Date:%15s  Name:%s  Bank:%4s  Account:%20s  IP:%15s  Country:%7s"%(count,obj_datetime,line_t[0],line_t[2],line_t[1],a[0],line_t[5]))
+            f.close
+            count += 1
+        else:
+            continue
