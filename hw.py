@@ -1,5 +1,4 @@
 #-*- coding: utf-8 -*-
-#!/usr/bin/python3
 
 import requests
 from bs4 import BeautifulSoup
@@ -7,6 +6,7 @@ import os
 import time
 from datetime import datetime, timedelta
 import codecs
+import pymysql
 
 url = 'http://fl0ckfl0ck.info'
 law = requests.get(url)
@@ -29,6 +29,8 @@ del editData_s[0:9]
 del editData_s[-5:-1]
 del editData_s[-1]
 
+#mysql connect
+conn = pymysql.connect(host='127.0.0.1', user='root', password='apmsetup', db="capoo", charset="euckr")
 
 count = 1
 
@@ -42,12 +44,13 @@ for i in editData_s:
     obj_datetime = datetime.strptime(a[1], '%Y-%m-%d %H:%M')
     #print("Num:%4d  IP: %15s  Date: %15s"%(count,a[0],obj_datetime))
 
-    list_d = os.listdir('/home/capoo/Desktop/BoB/Choi')
+    list_d = os.listdir('C:\\file')
 
     for j in list_d:
         if a[0] == j:
-            file_name = '/home/capoo/Desktop/BoB/Choi/%s/signCert.cert'%j
-            f = codecs.open(file_name,'r','CP949')
+            file_name = 'C:\\file/%s\signCert.cert'%j
+            f = codecs.open(file_name,'r','euckr')
+            #f = open(file_name, 'r')
             line = f.readline()
             line = line.replace('cn=', '')
             line = line.replace('()', ',')
@@ -58,8 +61,16 @@ for i in editData_s:
 
             #print(line_t[0][-20:-1])
             #print(line_t)
-            print("Num:%5d  Date:%15s  Name:%s  Bank:%4s  Account:%20s  IP:%15s  Country:%7s"%(count,obj_datetime,line_t[0],line_t[2],line_t[1],a[0],line_t[5]))
-            f.close
+            #print("Num:%5d  Date:%15s  Name:%s  Bank:%4s  Account:%20s  IP:%15s  Country:%7s"%(count,obj_datetime,line_t[0],line_t[2],line_t[1],a[0],line_t[5]))
+            curs = conn.cursor()
+            print(type(count))
+            print(type(str(obj_datetime)))
+            print(type(line_t[0]))
+            print(type(a[0]))
+            sql = "INSERT INTO info_db(count, date, name, bank, account, ip, country) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')"
+            curs.execute(sql%(int(count), str(obj_datetime), line_t[0], line_t[2], line_t[1], a[0], line_t[5]))
+            curs.close()
+            f.close()
             count += 1
         else:
             continue
